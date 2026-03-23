@@ -10,7 +10,7 @@ const links = [
   { href: "/ai-assistant", label: "AI Assistant" },
 ] as const;
 
-export function AppHeader({ premium }: { premium: boolean }) {
+export function AppHeader({ premium, showUpgrade }: { premium: boolean; showUpgrade?: boolean }) {
   return (
     <header className="sticky top-0 z-40 border-b border-emerald-200/60 bg-emerald-50/90 backdrop-blur-sm">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
@@ -23,6 +23,14 @@ export function AppHeader({ premium }: { premium: boolean }) {
               {l.label}
             </Link>
           ))}
+          {showUpgrade ? (
+            <Link
+              href="/upgrade"
+              className="rounded-full bg-emerald-700 px-3 py-1.5 text-sm font-semibold text-white hover:bg-emerald-800"
+            >
+              Plans
+            </Link>
+          ) : null}
           {premium ? (
             <Badge className="bg-emerald-600 text-white hover:bg-emerald-600">Premium</Badge>
           ) : null}

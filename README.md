@@ -14,7 +14,7 @@ Retirement forecasting web app: Next.js (App Router), TypeScript, Tailwind, shad
 
    - **Clerk**: [Dashboard → API keys](https://dashboard.clerk.com) — `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`
    - **Supabase**: project URL, anon key (optional for client), **service role** for server actions (`SUPABASE_SERVICE_ROLE_KEY`)
-   - **Stripe**: secret key, webhook secret, publishable key, **Price ID** for your subscription product
+   - **Stripe**: secret key, webhook secret, publishable key, **Price IDs** (`NEXT_PUBLIC_STRIPE_PRICE_ID` or separate monthly/annual `NEXT_PUBLIC_STRIPE_PRICE_ID_MONTHLY` / `NEXT_PUBLIC_STRIPE_PRICE_ID_ANNUAL`)
    - **OpenAI**: API key for `/ai-assistant` and `/api/chat`
    - **ADVISOR_USER_IDS**: comma-separated Clerk user IDs allowed to access `/advisor-portal`
 
@@ -49,12 +49,15 @@ The marketing home page lives under `app/(public)/` and stays static. Clerk-wrap
 
 1. Landing → **Start Free** → `/sign-up` (Clerk)
 2. After sign-up → `/onboarding` → profile saved to `userprofile`
-3. → `/dashboard` with calculators, budget, SS comparison, ads, lead-gen modal, premium CTA
-4. `/recommendations` — affiliate cards from Supabase
-5. `/ai-assistant` — chat (messages stored in `messages`)
+3. → `/dashboard` — calculators, budget, SS comparison, ads, advisor lead modal
+4. `/upgrade` — Stripe **monthly** or **annual** subscription; **Premium** adds PDF snapshot export, saved scenarios, plan-aware AI
+5. `/recommendations` — affiliate cards from Supabase
+6. `/ai-assistant` — chat (messages in `messages`)
+
+If you already ran an older `schema.sql`, apply `supabase/migrations/002_saved_scenarios.sql` for Premium scenario saving.
 
 ## Architecture notes
 
 - **Supabase**: server actions use the **service role** client only after `auth()` / `requireUserId()` from Clerk. Do not expose the service role to the browser.
-- **Premium**: Stripe Checkout → webhook updates `usersubscription`.
+- **Premium**: Stripe Checkout → webhook updates `usersubscription`. Subscribers get PDF export (`/api/report/pdf`), saved scenarios (`saved_scenarios`), and plan-aware AI (`/api/chat` uses profile context; higher token limit).
 - **Advisor portal**: `/advisor-portal` (restricted by `ADVISOR_USER_IDS` or `publicMetadata.role === "advisor"`).

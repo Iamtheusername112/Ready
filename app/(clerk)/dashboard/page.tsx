@@ -4,6 +4,7 @@ import { ensureUserProfile, getProfile } from "@/app/actions/profile";
 import { getSubscription } from "@/app/actions/subscription";
 import { fetchAds, type UserProfileRow } from "@/app/actions/catalog";
 import { getBudget } from "@/app/actions/budget";
+import { listSavedScenarios } from "@/app/actions/scenarios";
 import { DashboardView } from "@/components/dashboard/dashboard-view";
 
 export default async function DashboardPage() {
@@ -32,6 +33,8 @@ export default async function DashboardPage() {
     amount: Number(r.amount),
   }));
 
+  const savedScenarios = premium ? await listSavedScenarios() : [];
+
   return (
     <DashboardView
       profile={{
@@ -44,6 +47,7 @@ export default async function DashboardPage() {
         risktolerance: p.risktolerance ?? "moderate",
       }}
       premium={premium}
+      savedScenarios={savedScenarios}
       adsSidebar={adsSidebar}
       adsInline={adsInline as typeof adsSidebar}
       adsFooter={adsFooter as typeof adsSidebar}

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { compareSocialSecurityOptions, projectMoneyLasts, projectSavingsGrowth } from "@/lib/calculations/retirement";
 import { saveBudgetCategories } from "@/app/actions/budget";
@@ -7,6 +8,8 @@ import type { AdRecord } from "@/components/ads/AdSlot";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { AdvisorLeadModal } from "@/components/lead-gen/AdvisorLeadModal";
 import { MoneyChart } from "@/components/dashboard/money-chart";
+import { PremiumTools } from "@/components/dashboard/premium-tools";
+import type { SavedScenarioRow } from "@/lib/types/scenario";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,6 +33,7 @@ export type ProfileVM = {
 export function DashboardView({
   profile,
   premium,
+  savedScenarios,
   adsSidebar,
   adsInline,
   adsFooter,
@@ -37,6 +41,7 @@ export function DashboardView({
 }: {
   profile: ProfileVM;
   premium: boolean;
+  savedScenarios: SavedScenarioRow[];
   adsSidebar: AdRecord[];
   adsInline: AdRecord[];
   adsFooter: AdRecord[];
@@ -78,7 +83,7 @@ export function DashboardView({
     [profile, annualReturn]
   );
 
-  const ssCompare = useMemo(() => compareSocialSecurityOptions(2800), []);
+  const ssCompare = useMemo(() => compareSocialSecurityOptions(ssMonthly), [ssMonthly]);
 
   const [budget, setBudget] = useState<{ category: string; amount: number }[]>(
     budgetRows.length
@@ -117,10 +122,45 @@ export function DashboardView({
               <Badge variant="secondary" className="text-sm">
                 Free plan
               </Badge>
-              <UpgradeButton />
+              <Link
+                href="/upgrade"
+                className="inline-flex h-11 items-center justify-center rounded-full bg-emerald-600 px-5 text-base font-semibold text-white hover:bg-emerald-700"
+              >
+                View plans &amp; upgrade
+              </Link>
             </div>
           ) : null}
         </div>
+
+        {premium ? (
+          <PremiumTools
+            scenarios={savedScenarios}
+            snapshot={{ annualReturn, inflation, ssMonthly }}
+            onApplyScenario={(p) => {
+              setAnnualReturn(p.annualReturn);
+              setInflation(p.inflation);
+              setSsMonthly(p.ssMonthly);
+            }}
+          />
+        ) : (
+          <Card className="rounded-3xl border-emerald-200 bg-white/90 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-xl text-emerald-950">Go beyond the free snapshot</CardTitle>
+              <CardDescription className="text-base">
+                Premium includes a shareable PDF, saved &quot;what-if&quot; scenarios, and plan-aware AI — priced
+                monthly or annually.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link
+                href="/upgrade"
+                className="inline-flex h-11 items-center justify-center rounded-full bg-emerald-600 px-5 text-base font-semibold text-white hover:bg-emerald-700"
+              >
+                View plans &amp; pricing
+              </Link>
+            </CardContent>
+          </Card>
+        )}
 
         <Tabs defaultValue="money" className="w-full">
           <TabsList className="grid h-auto w-full grid-cols-2 gap-2 rounded-2xl bg-emerald-100/80 p-2 lg:grid-cols-4">
@@ -144,7 +184,9 @@ export function DashboardView({
                 <CardTitle className="text-2xl text-emerald-950">Will my money last?</CardTitle>
                 <CardDescription className="text-base">
                   Adjust the sliders — we&apos;ll update your outlook instantly.{" "}
-                  {!premium ? "Premium unlocks deeper scenarios & PDF export." : null}
+                  {premium
+                    ? "Use Premium tools above to export a PDF or save this scenario."
+                    : "Upgrade for PDF export, saved scenarios, and plan-aware AI."}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -273,8 +315,8 @@ export function DashboardView({
               <CardHeader>
                 <CardTitle className="text-2xl">Social Security optimizer</CardTitle>
                 <CardDescription className="text-base">
-                  Illustrative comparison at 62, 67, and 70 (not from SSA).
-                  {!premium ? " Premium unlocks full optimizer." : null}
+                  Uses your estimated monthly benefit from the Money lasts tab as a baseline at 67 (illustrative;
+                  not from SSA).
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -320,28 +362,5 @@ export function DashboardView({
 
       <AdvisorLeadModal open={leadOpen} onOpenChange={setLeadOpen} />
     </div>
-  );
-}
-
-function UpgradeButton() {
-  const [loading, setLoading] = useState(false);
-  return (
-    <Button
-      type="button"
-      className="h-11 rounded-full"
-      disabled={loading}
-      onClick={async () => {
-        setLoading(true);
-        try {
-          const res = await fetch("/api/stripe/checkout", { method: "POST" });
-          const data = await res.json();
-          if (data.url) window.location.href = data.url as string;
-        } finally {
-          setLoading(false);
-        }
-      }}
-    >
-      {loading ? "Opening checkout…" : "Upgrade to Premium"}
-    </Button>
   );
 }

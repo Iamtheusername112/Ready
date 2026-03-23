@@ -13,7 +13,7 @@ export async function AuthenticatedShell({ children }: { children: React.ReactNo
 
   return (
     <div className="min-h-screen bg-emerald-50/40">
-      <AppHeader premium={premium} />
+      <AppHeader premium={premium} showUpgrade={!premium} />
       {children}
     </div>
   );

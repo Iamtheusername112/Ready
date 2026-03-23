@@ -2,6 +2,7 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { ensureUserProfile, getProfile } from "@/app/actions/profile";
 import { listMessages } from "@/app/actions/messages";
+import { getSubscription } from "@/app/actions/subscription";
 import { AiChat } from "@/components/ai/ai-chat";
 
 export default async function AiAssistantPage() {
@@ -21,9 +22,12 @@ export default async function AiAssistantPage() {
     content: r.content,
   }));
 
+  const sub = await getSubscription(userId);
+  const premium = sub?.status === "active";
+
   return (
     <div className="px-4 py-10">
-      <AiChat initialMessages={initialMessages} />
+      <AiChat initialMessages={initialMessages} premium={premium} />
     </div>
   );
 }

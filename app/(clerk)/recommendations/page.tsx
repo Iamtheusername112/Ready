@@ -74,9 +74,12 @@ export default async function RecommendationsPage() {
         ))}
 
         {offers.length === 0 ? (
-          <p className="text-center text-emerald-800/80">
-            No affiliate offers yet — add rows in Supabase <code className="rounded bg-white px-1">affiliateoffers</code>.
-          </p>
+          <div className="rounded-3xl border border-emerald-100 bg-emerald-50/60 px-6 py-12 text-center">
+            <p className="text-lg font-medium text-emerald-950">Partners coming soon</p>
+            <p className="mt-2 max-w-md mx-auto text-base text-emerald-900/80">
+              We&apos;re curating trusted tools and services for retirees. Check back later — new picks will appear here.
+            </p>
+          </div>
         ) : null}
       </div>
     </div>

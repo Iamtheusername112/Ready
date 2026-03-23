@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState, useTransition } from "react";
 import { saveChatMessage } from "@/app/actions/messages";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
-export function AiChat({ initialMessages }: { initialMessages: Msg[] }) {
+export function AiChat({ initialMessages, premium = false }: { initialMessages: Msg[]; premium?: boolean }) {
   const [messages, setMessages] = useState<Msg[]>(initialMessages);
   const [input, setInput] = useState("");
   const [pending, startTransition] = useTransition();
@@ -40,8 +41,17 @@ export function AiChat({ initialMessages }: { initialMessages: Msg[] }) {
       <CardHeader>
         <CardTitle className="text-2xl text-emerald-950">Retirement Q&A</CardTitle>
         <p className="text-base text-emerald-900/85">
-          Ask plain-language questions. This is educational, not personalized tax or legal advice.
+          {premium
+            ? "Premium: answers can reference your onboarding numbers for relevant examples. Still educational—not tax or legal advice."
+            : "Educational guidance. Upgrade to Premium for plan-aware answers that use your profile context."}
         </p>
+        {!premium ? (
+          <p className="text-sm text-emerald-800">
+            <Link href="/upgrade" className="font-semibold text-emerald-700 underline-offset-2 hover:underline">
+              View Premium plans
+            </Link>
+          </p>
+        ) : null}
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <ScrollArea className="h-[min(60vh,420px)] rounded-2xl border border-emerald-100 bg-white/80 p-4">

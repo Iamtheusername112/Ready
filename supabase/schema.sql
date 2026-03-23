@@ -75,6 +75,18 @@ create table if not exists public.messages (
 
 create index if not exists messages_user_created_idx on public.messages (userid, created_at);
 
+-- Premium: saved calculator scenarios (compare "what if" assumptions)
+create table if not exists public.saved_scenarios (
+  id uuid primary key default gen_random_uuid(),
+  userid text not null references public.userprofile (id) on delete cascade,
+  name text not null,
+  payload jsonb not null,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+create index if not exists saved_scenarios_user_idx on public.saved_scenarios (userid, created_at desc);
+
 -- Enable RLS; app uses service role from server actions only (bypasses RLS).
 -- For direct client access later, add policies with Clerk JWT.
 alter table public.userprofile enable row level security;
@@ -84,3 +96,4 @@ alter table public.affiliateoffers enable row level security;
 alter table public.usersubscription enable row level security;
 alter table public.user_budget enable row level security;
 alter table public.messages enable row level security;
+alter table public.saved_scenarios enable row level security;

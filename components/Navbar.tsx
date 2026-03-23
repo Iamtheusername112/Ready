@@ -16,8 +16,8 @@ import { cn } from "@/lib/utils";
 const navLinks = [
   { href: "#features", label: "Features" },
   { href: "#pricing", label: "Pricing" },
-  { href: "#advisor", label: "Advisor Portal" },
-  { href: "#signin", label: "Sign In" },
+  { href: "/advisor-portal", label: "Advisor Portal" },
+  { href: "/sign-in", label: "Sign In" },
 ] as const;
 
 function Logo() {
@@ -65,7 +65,7 @@ export function Navbar() {
 
         <div className="flex min-w-0 items-center justify-end gap-3">
           <Link
-            href="#get-started"
+            href="/sign-up"
             className="hidden h-11 items-center justify-center rounded-full bg-rr-teal px-7 text-[15px] font-semibold text-white shadow-none transition-colors hover:bg-rr-teal/90 md:inline-flex"
           >
             Get Started
@@ -91,7 +91,7 @@ export function Navbar() {
               <div className="flex flex-col gap-2 px-4 py-4">
                 <NavLinks />
                 <Link
-                  href="#get-started"
+                  href="/sign-up"
                   className="mt-2 flex h-11 w-full items-center justify-center rounded-full bg-rr-teal text-[15px] font-semibold text-white transition-colors hover:bg-rr-teal/90"
                 >
                   Get Started

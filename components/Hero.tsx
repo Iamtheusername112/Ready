@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { TrustLogos } from "@/components/TrustLogos";
@@ -25,13 +26,17 @@ export function Hero() {
           </p>
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
             <Button
+              nativeButton={false}
               className="h-12 w-full rounded-full bg-rr-teal px-8 text-[15px] font-semibold text-white shadow-sm hover:bg-rr-teal/90 sm:w-auto"
+              render={<Link href="/sign-up" />}
             >
               Start Free
             </Button>
             <Button
+              nativeButton={false}
               variant="outline"
               className="h-12 w-full rounded-full border-2 border-rr-teal bg-white px-8 text-[15px] font-semibold text-rr-teal shadow-none hover:bg-rr-teal/[0.06] sm:w-auto"
+              render={<Link href="#features" />}
             >
               See How It Works
             </Button>

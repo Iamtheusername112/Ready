@@ -34,3 +34,20 @@ export async function listMessages(userId: string) {
     .order("created_at", { ascending: true });
   return data ?? [];
 }
+
+/** Most recent messages in chronological order (for OpenAI context). Caps length per message. */
+export async function listRecentChatMessages(userId: string, limit = 40) {
+  const supabase = createServiceClient();
+  if (!supabase) return [];
+  const { data } = await supabase
+    .from("messages")
+    .select("role, content")
+    .eq("userid", userId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  const rows = (data ?? []).reverse();
+  return rows.map((r) => ({
+    role: r.role as "user" | "assistant",
+    content: String(r.content ?? "").slice(0, 8000),
+  }));
+}

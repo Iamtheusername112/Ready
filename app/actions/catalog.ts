@@ -1,19 +1,12 @@
 "use server";
 
 import { createServiceClient } from "@/lib/supabase/admin";
-
-export type UserProfileRow = {
-  id: string;
-  age: number | null;
-  retirementage: number | null;
-  savings: number | null;
-  monthlycontrib: number | null;
-  monthlyexpenses: number | null;
-  ssstartage: number | null;
-  risktolerance: string | null;
-  zip: string | null;
-  onboardingcomplete: boolean | null;
-};
+import {
+  isNonEmptyTargeting,
+  matchesTargeting,
+  type AffiliateOfferRow,
+  type UserProfileRow,
+} from "@/lib/catalog/targeting";
 
 export async function fetchAds(profile: UserProfileRow | null) {
   const supabase = createServiceClient();
@@ -23,23 +16,23 @@ export async function fetchAds(profile: UserProfileRow | null) {
   return data.filter((ad) => matchesTargeting(ad.targetingjson, profile));
 }
 
-function matchesTargeting(
-  targeting: unknown,
-  profile: UserProfileRow | null
-): boolean {
-  if (!targeting || typeof targeting !== "object" || profile === null) return true;
-  const t = targeting as Record<string, unknown>;
-  if (typeof t.minAge === "number" && profile.age != null && profile.age < t.minAge) return false;
-  if (typeof t.maxAge === "number" && profile.age != null && profile.age > t.maxAge) return false;
-  if (typeof t.zipPrefix === "string" && profile.zip && !profile.zip.startsWith(t.zipPrefix)) return false;
-  return true;
-}
-
-export async function fetchAffiliateOffers() {
+export async function fetchAffiliateOffers(profile: UserProfileRow | null): Promise<AffiliateOfferRow[]> {
   const supabase = createServiceClient();
   if (!supabase) return [];
-  const { data } = await supabase.from("affiliateoffers").select("*").order("category");
-  return data ?? [];
+  const { data, error } = await supabase.from("affiliateoffers").select("*").order("category");
+  if (error || !data) return [];
+
+  const rows = data as AffiliateOfferRow[];
+  const filtered = rows.filter((row) => matchesTargeting(row.targetingjson ?? {}, profile));
+
+  return filtered.sort((a, b) => {
+    const aPersonalized = isNonEmptyTargeting(a.targetingjson);
+    const bPersonalized = isNonEmptyTargeting(b.targetingjson);
+    if (aPersonalized !== bPersonalized) return aPersonalized ? -1 : 1;
+    const cat = (a.category ?? "").localeCompare(b.category ?? "");
+    if (cat !== 0) return cat;
+    return (a.name ?? "").localeCompare(b.name ?? "");
+  });
 }
 
 export async function fetchAdvisorLeads() {

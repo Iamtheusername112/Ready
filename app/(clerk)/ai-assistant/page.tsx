@@ -2,8 +2,8 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { ensureUserProfile, getProfile } from "@/app/actions/profile";
 import { listMessages } from "@/app/actions/messages";
-import { getSubscription } from "@/app/actions/subscription";
 import { AiChat } from "@/components/ai/ai-chat";
+import { isPremiumUser } from "@/lib/auth/premium";
 
 export default async function AiAssistantPage() {
   const { userId } = await auth();
@@ -16,14 +16,11 @@ export default async function AiAssistantPage() {
     redirect("/onboarding");
   }
 
-  const rows = await listMessages(userId);
+  const [rows, premium] = await Promise.all([listMessages(userId), isPremiumUser(userId)]);
   const initialMessages = rows.map((r) => ({
     role: r.role as "user" | "assistant",
     content: r.content,
   }));
-
-  const sub = await getSubscription(userId);
-  const premium = sub?.status === "active";
 
   return (
     <div className="px-4 py-10">

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 import { compareSocialSecurityOptions, projectMoneyLasts, projectSavingsGrowth } from "@/lib/calculations/retirement";
 import { saveBudgetCategories } from "@/app/actions/budget";
 import type { AdRecord } from "@/components/ads/AdSlot";
@@ -287,9 +288,16 @@ export function DashboardView({
                   variant="secondary"
                   className="h-11 rounded-full"
                   onClick={() =>
-                    saveBudgetCategories(budget).then(() => {
-                      /* optimistic — could toast */
-                    })
+                    toast.promise(
+                      saveBudgetCategories(budget).then((r) => {
+                        if (!r.ok) throw new Error(r.error);
+                      }),
+                      {
+                        loading: "Saving budget…",
+                        success: "Budget saved.",
+                        error: (err) => (err instanceof Error ? err.message : "Could not save budget."),
+                      }
+                    )
                   }
                 >
                   Save budget

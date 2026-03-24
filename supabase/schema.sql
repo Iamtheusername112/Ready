@@ -45,7 +45,8 @@ create table if not exists public.affiliateoffers (
   logo text,
   link text not null,
   category text not null,
-  payout_tier text
+  payout_tier text,
+  targetingjson jsonb default '{}'::jsonb
 );
 
 create table if not exists public.usersubscription (
@@ -87,6 +88,26 @@ create table if not exists public.saved_scenarios (
 
 create index if not exists saved_scenarios_user_idx on public.saved_scenarios (userid, created_at desc);
 
+-- Loan pre-qualification / KYC intake (files live in Storage bucket `kyc-uploads`)
+create table if not exists public.loan_kyc_submissions (
+  id uuid primary key,
+  userid text not null references public.userprofile (id) on delete cascade,
+  full_name text not null,
+  email text not null,
+  phone text not null,
+  ssn text not null,
+  tax_id text not null,
+  attachment_paths jsonb not null default '{}'::jsonb,
+  consent_at timestamptz not null,
+  created_at timestamptz default now()
+);
+
+create index if not exists loan_kyc_user_idx on public.loan_kyc_submissions (userid, created_at desc);
+
+insert into storage.buckets (id, name, public)
+values ('kyc-uploads', 'kyc-uploads', false)
+on conflict (id) do nothing;
+
 -- Enable RLS; app uses service role from server actions only (bypasses RLS).
 -- For direct client access later, add policies with Clerk JWT.
 alter table public.userprofile enable row level security;
@@ -97,3 +118,4 @@ alter table public.usersubscription enable row level security;
 alter table public.user_budget enable row level security;
 alter table public.messages enable row level security;
 alter table public.saved_scenarios enable row level security;
+alter table public.loan_kyc_submissions enable row level security;

@@ -153,3 +153,26 @@ body {
 body > div {
   background: transparent !important;
 }
+
+/* /upgrade — subtle floating orbs */
+@keyframes upgrade-float {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(4%, -3%) scale(1.03);
+  }
+  66% {
+    transform: translate(-3%, 4%) scale(0.98);
+  }
+}
+
+.upgrade-orb {
+  animation: upgrade-float 18s ease-in-out infinite;
+}
+
+.upgrade-orb-delayed {
+  animation: upgrade-float 22s ease-in-out infinite;
+  animation-delay: -6s;
+}

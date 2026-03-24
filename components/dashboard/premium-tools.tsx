@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { toast } from "sonner";
 import { deleteScenario, saveScenario } from "@/app/actions/scenarios";
 import type { SavedScenarioRow, ScenarioPayload } from "@/lib/types/scenario";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,7 @@ export function PremiumTools({
       ssMonthly: String(snapshot.ssMonthly),
     });
     window.open(`/api/report/pdf?${q.toString()}`, "_blank", "noopener,noreferrer");
+    toast.info("Opening your PDF…");
   }
 
   return (
@@ -75,8 +77,10 @@ export function PremiumTools({
                   const res = await saveScenario(name, snapshot);
                   if (!res.ok) {
                     setError(res.error);
+                    toast.error(res.error);
                     return;
                   }
+                  toast.success("Scenario saved.");
                   setName("");
                   router.refresh();
                 });
@@ -116,7 +120,12 @@ export function PremiumTools({
                       disabled={pending}
                       onClick={() => {
                         startTransition(async () => {
-                          await deleteScenario(s.id);
+                          const res = await deleteScenario(s.id);
+                          if (!res.ok) {
+                            toast.error(res.error);
+                            return;
+                          }
+                          toast.success("Scenario removed.");
                           router.refresh();
                         });
                       }}

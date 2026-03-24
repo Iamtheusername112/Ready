@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 const links = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/recommendations", label: "Recommendations" },
+  { href: "/loan-assistance", label: "Loan help" },
   { href: "/ai-assistant", label: "AI Assistant" },
 ] as const;
 

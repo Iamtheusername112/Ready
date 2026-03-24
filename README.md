@@ -63,7 +63,11 @@ The marketing home page lives under `app/(public)/` and stays static. Clerk-wrap
 5. `/recommendations` — affiliate cards from Supabase
 6. `/ai-assistant` — chat (messages in `messages`)
 
-If you already ran an older `schema.sql`, apply `supabase/migrations/002_saved_scenarios.sql` for Premium scenario saving.
+If you already ran an older `schema.sql`, apply `supabase/migrations/002_saved_scenarios.sql` for Premium scenario saving, `003_loan_kyc.sql` for **Loan assistance** (KYC table + `kyc-uploads` storage bucket), and `004_loan_kyc_full_ssn_tax_id.sql` if your `loan_kyc_submissions` table still has `last4_ssn` / `tax_id_last4` columns. **Loan KYC stores full 9-digit SSN and tax ID in the database** — use encryption or a compliant secrets vault in production.
+
+**Loan KYC: “Storage bucket missing”** — The private bucket `kyc-uploads` must exist. In Supabase → **SQL Editor**, run **`supabase/storage-kyc-bucket.sql`** (or the bucket `insert` at the end of `schema.sql`). Alternatively: **Storage** → **New bucket** → name **`kyc-uploads`** → leave **Public** off → Create.
+
+**Loan KYC: “Could not find the table `public.loan_kyc_submissions`”** — Run **`supabase/ensure-loan-kyc.sql`** in the **same** Supabase project as `NEXT_PUBLIC_SUPABASE_URL`, or re-run the loan section from **`supabase/schema.sql`**. Confirm **Table Editor** shows **`loan_kyc_submissions`**, then retry (PostgREST cache may take a short time).
 
 ## Architecture notes
 

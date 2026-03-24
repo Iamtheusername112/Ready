@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { upsertProfile, type OnboardingPayload } from "@/app/actions/profile";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -45,14 +46,16 @@ export function OnboardingWizard() {
     startTransition(async () => {
       const res = await upsertProfile(form);
       if (res.ok) {
+        toast.success("Profile saved. Welcome to your dashboard.");
         router.push("/dashboard");
         router.refresh();
         return;
       }
-      setSaveError(
+      const msg =
         res.error ??
-          "Could not save your answers. Check that Supabase is configured and the database is set up."
-      );
+        "Could not save your answers. Check that Supabase is configured and the database is set up.";
+      setSaveError(msg);
+      toast.error(msg);
     });
   }
 

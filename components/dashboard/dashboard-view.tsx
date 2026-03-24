@@ -163,82 +163,89 @@ export function DashboardView({
           </Card>
         )}
 
-        <Tabs defaultValue="money" className="w-full">
-          <TabsList className="grid h-auto w-full grid-cols-2 gap-2 rounded-2xl bg-emerald-100/80 p-2 lg:grid-cols-4">
-            <TabsTrigger value="money" className="rounded-xl py-3 text-base">
+        <Tabs defaultValue="money" className="w-full gap-8">
+          <TabsList className="grid h-auto w-full grid-cols-2 gap-2.5 rounded-2xl bg-emerald-100/80 p-2.5 sm:gap-2 sm:p-2 lg:grid-cols-4">
+            <TabsTrigger value="money" className="min-h-[2.75rem] rounded-xl px-2 py-2.5 text-sm leading-snug sm:min-h-9 sm:px-3 sm:py-3 sm:text-base">
               Money lasts
             </TabsTrigger>
-            <TabsTrigger value="budget" className="rounded-xl py-3 text-base">
+            <TabsTrigger value="budget" className="min-h-[2.75rem] rounded-xl px-2 py-2.5 text-sm leading-snug sm:min-h-9 sm:px-3 sm:py-3 sm:text-base">
               Budget
             </TabsTrigger>
-            <TabsTrigger value="growth" className="rounded-xl py-3 text-base">
+            <TabsTrigger value="growth" className="min-h-[2.75rem] rounded-xl px-2 py-2.5 text-sm leading-snug sm:min-h-9 sm:px-3 sm:py-3 sm:text-base">
               Savings growth
             </TabsTrigger>
-            <TabsTrigger value="ss" className="rounded-xl py-3 text-base">
+            <TabsTrigger value="ss" className="min-h-[2.75rem] rounded-xl px-2 py-2.5 text-sm leading-snug sm:min-h-9 sm:px-3 sm:py-3 sm:text-base">
               Social Security
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="money" className="mt-6 space-y-6">
+          <TabsContent value="money" className="mt-0 space-y-6">
             <Card className="rounded-3xl border-emerald-100 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-2xl text-emerald-950">Will my money last?</CardTitle>
-                <CardDescription className="text-base">
+              <CardHeader className="space-y-3 pb-2 sm:pb-4">
+                <CardTitle className="text-xl leading-tight text-emerald-950 sm:text-2xl">Will my money last?</CardTitle>
+                <CardDescription className="text-sm leading-relaxed text-emerald-900/85 sm:text-base">
                   Adjust the sliders — we&apos;ll update your outlook instantly.{" "}
                   {premium
                     ? "Use Premium tools above to export a PDF or save this scenario."
                     : "Upgrade for PDF export, saved scenarios, and plan-aware AI."}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid gap-6 sm:grid-cols-2">
-                  <div>
-                    <Label className="text-base">Expected annual return ({annualReturn}%)</Label>
+              <CardContent className="space-y-8 sm:space-y-6">
+                <div className="grid gap-8 sm:grid-cols-2 sm:gap-6">
+                  <div className="min-w-0 space-y-1">
+                    <Label className="text-sm font-medium leading-snug sm:text-base">
+                      Expected annual return ({annualReturn}%)
+                    </Label>
                     <Slider
                       value={[annualReturn]}
                       min={2}
                       max={12}
                       step={0.5}
                       onValueChange={(v) => setAnnualReturn(Array.isArray(v) ? (v[0] ?? 6) : v)}
-                      className="mt-3"
+                      className="mt-4 sm:mt-3"
                     />
                   </div>
-                  <div>
-                    <Label className="text-base">Inflation ({inflation}%)</Label>
+                  <div className="min-w-0 space-y-1">
+                    <Label className="text-sm font-medium leading-snug sm:text-base">Inflation ({inflation}%)</Label>
                     <Slider
                       value={[inflation]}
                       min={1}
                       max={5}
                       step={0.5}
                       onValueChange={(v) => setInflation(Array.isArray(v) ? (v[0] ?? 2.5) : v)}
-                      className="mt-3"
+                      className="mt-4 sm:mt-3"
                     />
                   </div>
                 </div>
-                <div className="max-w-xs space-y-2">
-                  <Label htmlFor="ssm">Estimated monthly Social Security</Label>
+                <div className="w-full max-w-md space-y-2">
+                  <Label htmlFor="ssm" className="text-sm sm:text-base">
+                    Estimated monthly Social Security
+                  </Label>
                   <Input
                     id="ssm"
                     type="number"
-                    className="h-12 text-lg"
+                    className="h-12 w-full text-base sm:text-lg"
                     value={ssMonthly}
                     onChange={(e) => setSsMonthly(+e.target.value)}
                   />
                 </div>
 
-                <div className="rounded-2xl bg-emerald-50 p-6 text-center">
-                  <p className="text-sm font-medium uppercase tracking-wide text-emerald-800">Outlook</p>
-                  <p className="mt-2 text-3xl font-bold text-emerald-950">
+                <div className="rounded-2xl bg-emerald-50 px-4 py-6 text-center sm:px-6 sm:py-7">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-emerald-800 sm:text-sm">Outlook</p>
+                  <p className="mt-4 text-xl font-bold leading-snug text-emerald-950 sm:mt-3 sm:text-2xl md:text-3xl">
                     {result.depletionAge
                       ? `Funds may run low around age ${result.depletionAge}`
                       : `Your money can last past age ${profile.retirementage + Math.max(5, result.yearsFundsLast)}`}
                   </p>
-                  <p className="mt-2 text-lg text-emerald-900/90">
-                    Confidence score (illustrative): {result.survivalProbabilityPct}%
+                  <p className="mt-4 text-base leading-relaxed text-emerald-900/90 sm:mt-3 sm:text-lg">
+                    Confidence score (illustrative):{" "}
+                    <span className="font-semibold tabular-nums">{result.survivalProbabilityPct}%</span>
                   </p>
                 </div>
 
-                <MoneyChart data={result.chart.slice(0, 80)} />
+                <div className="-mx-1 min-w-0 sm:mx-0">
+                  <MoneyChart data={result.chart.slice(0, 80)} />
+                </div>
 
                 <Button
                   type="button"
@@ -262,7 +269,7 @@ export function DashboardView({
             </Card>
           </TabsContent>
 
-          <TabsContent value="budget" className="mt-6">
+          <TabsContent value="budget" className="mt-0">
             <Card className="rounded-3xl border-emerald-100 shadow-sm">
               <CardHeader>
                 <CardTitle className="text-2xl">Retirement budget planner</CardTitle>
@@ -270,11 +277,14 @@ export function DashboardView({
               </CardHeader>
               <CardContent className="space-y-4">
                 {budget.map((row, i) => (
-                  <div key={row.category} className="flex flex-wrap items-center gap-3">
-                    <Label className="w-32 text-base">{row.category}</Label>
+                  <div
+                    key={row.category}
+                    className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3"
+                  >
+                    <Label className="shrink-0 text-base sm:w-32">{row.category}</Label>
                     <Input
                       type="number"
-                      className="h-11 max-w-[10rem] text-base"
+                      className="h-11 w-full max-w-full text-base sm:max-w-[10rem]"
                       value={row.amount}
                       onChange={(e) => {
                         const v = +e.target.value;
@@ -306,7 +316,7 @@ export function DashboardView({
             </Card>
           </TabsContent>
 
-          <TabsContent value="growth" className="mt-6">
+          <TabsContent value="growth" className="mt-0">
             <Card className="rounded-3xl border-emerald-100 shadow-sm">
               <CardHeader>
                 <CardTitle className="text-2xl">Savings growth forecaster</CardTitle>
@@ -318,7 +328,7 @@ export function DashboardView({
             </Card>
           </TabsContent>
 
-          <TabsContent value="ss" className="mt-6">
+          <TabsContent value="ss" className="mt-0">
             <Card className="rounded-3xl border-emerald-100 shadow-sm">
               <CardHeader>
                 <CardTitle className="text-2xl">Social Security optimizer</CardTitle>
@@ -331,13 +341,17 @@ export function DashboardView({
                 {ssCompare.rows.map((r) => (
                   <div
                     key={r.age}
-                    className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-emerald-100 bg-emerald-50/50 px-4 py-3"
+                    className="flex flex-col gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/50 px-4 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-x-4 sm:gap-y-2 sm:py-3"
                   >
-                    <span className="text-lg font-medium">Start at age {r.age}</span>
-                    <span className="text-lg">${r.monthly.toLocaleString()}/mo</span>
-                    <span className="text-sm text-emerald-800/80">
-                      ~${r.lifetimeTo90.toLocaleString()} to age 90 (illustrative)
-                    </span>
+                    <span className="text-lg font-semibold text-emerald-950">Start at age {r.age}</span>
+                    <div className="flex flex-col gap-1 border-t border-emerald-200/80 pt-3 sm:flex-1 sm:flex-row sm:items-baseline sm:justify-end sm:gap-4 sm:border-t-0 sm:pt-0">
+                      <span className="text-lg font-semibold tabular-nums text-emerald-950">
+                        ${r.monthly.toLocaleString()}/mo
+                      </span>
+                      <span className="text-sm leading-snug text-emerald-800/85">
+                        ~${r.lifetimeTo90.toLocaleString()} to age 90 (illustrative)
+                      </span>
+                    </div>
                   </div>
                 ))}
               </CardContent>

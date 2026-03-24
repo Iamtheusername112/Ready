@@ -96,15 +96,15 @@ export function BtcPlanCard({
         </ol>
       </div>
 
-      <Button
-        asChild
-        className="mt-4 h-12 w-full rounded-full bg-gradient-to-r from-orange-500 to-amber-500 text-base font-bold text-white shadow-md transition hover:from-orange-600 hover:to-amber-600 hover:shadow-lg"
+      <a
+        href={changellyUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-4 inline-flex h-12 w-full items-center justify-center gap-1 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 text-base font-bold text-white shadow-md transition hover:from-orange-600 hover:to-amber-600 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2"
       >
-        <a href={changellyUrl} target="_blank" rel="noopener noreferrer">
-          Continue to payment
-          <ExternalLink className="ml-2 h-4 w-4" aria-hidden />
-        </a>
-      </Button>
+        Continue to payment
+        <ExternalLink className="h-4 w-4 shrink-0" aria-hidden />
+      </a>
       <p className="mt-2 text-center text-[11px] text-slate-500">Opens in a new tab — keep this page open for your payment details.</p>
     </div>
   );
